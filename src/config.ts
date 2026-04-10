@@ -5,30 +5,8 @@ import fs from "node:fs";
 import 'dotenv/config.js';
 
 const ConfigSchema = z.object({
-    name: z.string().default("mcp-sitecore-server"),
+    name: z.string().default("vibe-sitecore"),
     version: z.string().optional(),
-    graphQL: z.object({
-        endpoint: z.string().url().min(1, "endpoint is required"),
-        schemas: z.array(z.string()),
-        apiKey: z.string(),
-        headers: z.record(z.string(), z.string()).optional(),
-    }).default({
-        endpoint: "https://xmcloudcm.localhost/sitecore/api/graph/",
-        schemas: ["edge", "master"],
-        apiKey: "{6D3F291E-66A5-4703-887A-D549AF83D859}",
-        headers: {},
-    }),
-    itemService: z.object({
-        domain: z.string(),
-        username: z.string(),
-        password: z.string(),
-        serverUrl: z.string().url(),
-    }).default({
-        domain: "sitecore",
-        username: "admin",
-        password: "b",
-        serverUrl: "https://xmcloudcm.localhost/",
-    }),
     powershell: z.object({
         domain: z.string(),
         username: z.string(),
@@ -44,14 +22,6 @@ const ConfigSchema = z.object({
 });
 
 export const envSchema = z.object({
-    GRAPHQL_ENDPOINT: z.string().url().optional(),
-    GRAPHQL_SCHEMAS: z.string().optional(),
-    GRAPHQL_API_KEY: z.string().optional(),
-    GRAPHQL_HEADERS: z.string().optional(),
-    ITEM_SERVICE_DOMAIN: z.string().optional(),
-    ITEM_SERVICE_USERNAME: z.string().optional(),
-    ITEM_SERVICE_PASSWORD: z.string().optional(),
-    ITEM_SERVICE_SERVER_URL: z.string().url().optional(),
     POWERSHELL_DOMAIN: z.string().optional(),
     POWERSHELL_USERNAME: z.string().optional(),
     POWERSHELL_PASSWORD: z.string().optional(),
@@ -86,18 +56,6 @@ const { version, name } = packageData;
 const ENV: EnvConfig = envSchema.parse(process.env);
 const config: Config = {
     name: `${name} ${version}`,
-    graphQL: {
-        endpoint: ENV.GRAPHQL_ENDPOINT || "https://xmcloudcm.localhost/sitecore/api/graph/",
-        schemas: ENV.GRAPHQL_SCHEMAS ? ENV.GRAPHQL_SCHEMAS.split(",").map(x => x.trim()) : ["edge", "master"],
-        apiKey: ENV.GRAPHQL_API_KEY || "{6D3F291E-66A5-4703-887A-D549AF83D859}",
-        headers: ENV.GRAPHQL_HEADERS ? JSON.parse(ENV.GRAPHQL_HEADERS) : {},
-    },
-    itemService: {
-        domain: ENV.ITEM_SERVICE_DOMAIN || "sitecore",
-        username: ENV.ITEM_SERVICE_USERNAME || "admin",
-        password: ENV.ITEM_SERVICE_PASSWORD || "b",
-        serverUrl: ENV.ITEM_SERVICE_SERVER_URL || "https://xmcloudcm.localhost/",
-    },
     powershell: {
         domain: ENV.POWERSHELL_DOMAIN || "sitecore",
         username: ENV.POWERSHELL_USERNAME || "admin",

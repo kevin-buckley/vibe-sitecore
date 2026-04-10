@@ -7,14 +7,6 @@ startCommand:
     |-
     (config) => ({ command: 'node', args: ['dist/index.js'], env: {
           TRANSPORT: 'stdio',
-          GRAPHQL_ENDPOINT: config.graphQLEndpoint,
-          GRAPHQL_SCHEMAS: config.graphQLSchemas.join(','),
-          GRAPHQL_API_KEY: config.graphQLApiKey,
-          GRAPHQL_HEADERS: config.graphQLHeaders ? JSON.stringify(config.graphQLHeaders) : undefined,
-          ITEM_SERVICE_DOMAIN: config.itemServiceDomain,
-          ITEM_SERVICE_USERNAME: config.itemServiceUsername,
-          ITEM_SERVICE_PASSWORD: config.itemServicePassword,
-          ITEM_SERVICE_SERVER_URL: config.itemServiceServerUrl,
           POWERSHELL_DOMAIN: config.powershellDomain,
           POWERSHELL_USERNAME: config.powershellUsername,
           POWERSHELL_PASSWORD: config.powershellPassword,
@@ -26,24 +18,6 @@ startCommand:
     type: object
     required: []
     properties:
-      graphQLEndpoint:
-        type: string
-      graphQLSchemas:
-        type: array
-        items:
-          type: string
-      graphQLApiKey:
-        type: string
-      graphQLHeaders:
-        type: object
-      itemServiceDomain:
-        type: string
-      itemServiceUsername:
-        type: string
-      itemServicePassword:
-        type: string
-      itemServiceServerUrl:
-        type: string
       powershellDomain:
         type: string
       powershellUsername:
@@ -55,16 +29,6 @@ startCommand:
       authorizationHeader:
         type: string
   exampleConfig:
-    graphQLEndpoint: https://example.com/sitecore/api/graph/
-    graphQLSchemas:
-      - edge
-      - master
-    graphQLApiKey: "{API-KEY}"
-    graphQLHeaders: {}
-    itemServiceDomain: sitecore
-    itemServiceUsername: admin
-    itemServicePassword: b
-    itemServiceServerUrl: https://example.com/
     powershellDomain: sitecore
     powershellUsername: admin
     powershellPassword: b

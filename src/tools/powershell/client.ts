@@ -18,11 +18,25 @@ class PowershellClient {
         this.bearertoken = "Basic " + Buffer.from(`${username}:${password}`).toString("base64");
     }
 
+    async executeScriptRaw(script: string, parameters: Record<string, any> = {}): Promise<string> {
+        const uuid = generateUUID();
+        const url = `${this.serverUrl}/-/script/script/?sessionId=${uuid}&rawOutput=True&persistentSession=False`;
+        const headers = {
+            'Authorization': this.bearertoken || '',
+            'Content-Type': 'application/json',
+        };
+        const scriptWithParameters = this.commandBuilder.buildCommandString(script, parameters);
+        const body = `${scriptWithParameters}\r\n <#${uuid}#>\r\n`;
+        const response = await fetch(url, { method: 'POST', headers, body });
+        if (!response.ok) {
+            throw new Error(`Error executing script: ${response.statusText}`);
+        }
+        return response.text();
+    }
+
     async executeScript(script: string, parameters: Record<string, any> = {}): Promise<any> {
         const uuid = generateUUID();
-        // Consider passing `rawOutput=True` and use custom serialization to CSV/JSON
-        // ConvertTo-CliXml that is used internally in SPE relies on System.Management.Automation.Serializer, which seems has bad performance.
-        const url = `${this.serverUrl}/-/script/script/?sessionId=${uuid}&rawOutput=False&persistentSession=False `;
+        const url = `${this.serverUrl}/-/script/script/?sessionId=${uuid}&rawOutput=False&persistentSession=False`;
         const headers = {
             'Authorization': this.bearertoken || '',
             'Content-Type': 'application/json',

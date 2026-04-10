@@ -3,31 +3,24 @@ import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import alias from '@rollup/plugin-alias';
 import path from 'path';
-import copy from 'rollup-plugin-copy'
 
 export default {
   input: 'dist/index.js',
   output: {
     file: 'dist/bundle.js',
-    format: 'esm'
-  },  plugins: [
+    format: 'esm',
+  },
+  plugins: [
     nodeResolve({
-      preferBuiltins: true
+      preferBuiltins: true,
     }),
-    commonjs({
-    }),
+    commonjs({}),
     json(),
     alias({
       entries: [
-        { find: '@', replacement: path.resolve('dist') }
-      ]
+        { find: '@', replacement: path.resolve('dist') },
+      ],
     }),
-    copy({
-      targets: [
-        { src: 'src/tools/sitecore-cli/sitecore-cli-documentation.md', dest: 'dist/tools/sitecore-cli' },
-        { src: 'src/tools/powershell/documentation/**/*.md', dest: 'dist/tools/powershell/documentation' }
-      ]
-    })
   ],
   // External packages that shouldn't be bundled
   external: [
@@ -45,6 +38,6 @@ export default {
     'stream',
     'events',
     'zlib',
-    'statuses'
-  ]
+    'statuses',
+  ],
 };

@@ -2,7 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import { safeMcpResponse } from "@/helper.js";
 import type { Config } from "@/config.js";
 import { z } from "zod";
-import { runGenericPowershellCommand } from "./simple/generic.js";
+import { PowershellClient } from "./client.js";
 
 export function runPowershellScriptTool(server: McpServer, config: Config) {
     server.tool(
@@ -13,8 +13,19 @@ export function runPowershellScriptTool(server: McpServer, config: Config) {
                 .describe("The Powershell script to run."),
         },
         async (params) => {
-            const command = params.script;
-            return safeMcpResponse(runGenericPowershellCommand(config, command, {}));
+            return safeMcpResponse((async () => {
+                const client = new PowershellClient(
+                    config.powershell.serverUrl,
+                    config.powershell.username,
+                    config.powershell.password,
+                    config.powershell.domain
+                );
+                const text = await client.executeScriptRaw(params.script, {});
+                return {
+                    content: [{ type: "text", text }],
+                    isError: false,
+                };
+            })());
         }
     );
 }

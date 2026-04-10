@@ -1,4 +1,4 @@
-name: Publish antonytm/mcp-sitecore-windows to Docker Hub
+name: Publish vibe-sitecore-windows to Docker Hub
 on:
   release:
     types: [created]
@@ -11,7 +11,7 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v6
         name: Build & push Docker image
         with:
-          image: antonytm/mcp-sitecore-windows
+          image: ${{ secrets.DOCKER_USERNAME }}/vibe-sitecore-windows
           tags: 1.3.5, latest
           registry: docker.io
           dockerfile: ./docker/windows/Dockerfile
