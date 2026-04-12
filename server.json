@@ -24,6 +24,7 @@
           "POWERSHELL_USERNAME": "admin",
           "POWERSHELL_PASSWORD": "b",
           "POWERSHELL_SERVER_URL": "https://example.com/",
+          "PAGE_HTML_BASE_URL": "http://localhost:3000",
           "AUTORIZATION_HEADER": "",
           "NODE_REJECT_UNAUTHORIZED": "0"
         }

@@ -18,6 +18,7 @@ const ConfigSchema = z.object({
         password: "b",
         serverUrl: "https://xmcloudcm.localhost/",
     }),
+    pageHtmlBaseUrl: z.string().url(),
     authorizationHeader: z.string().default("")
 });
 
@@ -26,6 +27,7 @@ export const envSchema = z.object({
     POWERSHELL_USERNAME: z.string().optional(),
     POWERSHELL_PASSWORD: z.string().optional(),
     POWERSHELL_SERVER_URL: z.string().url().optional(),
+    PAGE_HTML_BASE_URL: z.string().url().optional(),
     AUTORIZATION_HEADER: z.string().optional(),
 });
 
@@ -62,6 +64,7 @@ const config: Config = {
         password: ENV.POWERSHELL_PASSWORD || "b",
         serverUrl: ENV.POWERSHELL_SERVER_URL || "https://xmcloudcm.localhost/",
     },
+    pageHtmlBaseUrl: ENV.PAGE_HTML_BASE_URL || ENV.POWERSHELL_SERVER_URL || "https://xmcloudcm.localhost/",
     authorizationHeader: ENV.AUTORIZATION_HEADER || "",
 };
 

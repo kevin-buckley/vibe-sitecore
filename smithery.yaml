@@ -11,6 +11,7 @@ startCommand:
           POWERSHELL_USERNAME: config.powershellUsername,
           POWERSHELL_PASSWORD: config.powershellPassword,
           POWERSHELL_SERVER_URL: config.powershellServerUrl,
+          PAGE_HTML_BASE_URL: config.pageHtmlBaseUrl,
           AUTORIZATION_HEADER: config.authorizationHeader
         } })
   configSchema:
@@ -26,6 +27,8 @@ startCommand:
         type: string
       powershellServerUrl:
         type: string
+      pageHtmlBaseUrl:
+        type: string
       authorizationHeader:
         type: string
   exampleConfig:
@@ -33,4 +36,5 @@ startCommand:
     powershellUsername: admin
     powershellPassword: b
     powershellServerUrl: https://example.com/
+    pageHtmlBaseUrl: http://localhost:3000
     authorizationHeader: ""
