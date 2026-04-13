@@ -103,6 +103,47 @@ The server reads the following environment variables:
 | `AUTORIZATION_HEADER` | No | empty string | Optional shared secret for HTTP transports. If set, the server requires the incoming `authorization` header to match this value. The variable name is intentionally spelled `AUTORIZATION_HEADER` to match the current implementation. |
 | `NODE_REJECT_UNAUTHORIZED` | No | Node.js default | Optional Node.js TLS setting. Set `NODE_REJECT_UNAUTHORIZED=0` only for local development when you need to call self-signed HTTPS endpoints such as local Sitecore CM instances. |
 
+### Enable Sitecore PowerShell remoting on CM
+
+The `POWERSHELL_*` environment variables are only one side of the setup. Your Sitecore CM must also allow SPE remoting requests to reach the remoting endpoint instead of redirecting them to the normal login flow.
+
+`vibe-sitecore` sends requests to the SPE remoting endpoint at `/-/script/script/` using Basic authentication. On local XM Cloud and other hardened CM setups, the early `Sitecore.Pipelines.HttpRequest.RequireAuthentication` processor can intercept that request and return a login redirect before SPE gets a chance to authenticate it.
+
+If you see remoting calls fail with login HTML, a redirect, or `Error executing script`, add an include patch on the CM instance that exempts the SPE remoting paths from the early `RequireAuthentication` redirect.
+
+Example patch:
+
+```xml
+<!-- Local development example. Do not use as-is in production. -->
+<configuration xmlns:patch="http://www.sitecore.net/xmlconfig/" xmlns:role="http://www.sitecore.net/xmlconfig/role/">
+  <sitecore role:require="Standalone or ContentManagement or XMCloud">
+    <pipelines>
+      <httpRequestBegin>
+        <processor type="Sitecore.Pipelines.HttpRequest.RequireAuthentication, Sitecore.Kernel">
+          <IgnoreRules>
+            <prefix hint="speRemotingAlias">^/-/script/.*</prefix>
+            <prefix hint="speServicesEncoded">^/sitecore%20modules/PowerShell/Services/.*</prefix>
+            <prefix hint="speServicesDecoded">^/sitecore modules/PowerShell/Services/.*</prefix>
+          </IgnoreRules>
+        </processor>
+      </httpRequestBegin>
+    </pipelines>
+  </sitecore>
+</configuration>
+```
+
+Recommended placement is an include patch such as `App_Config/Include/zzz.Dev/Spe.Remoting.Dev.config` so the change is explicit and easy to remove outside local development.
+
+What to do after adding the patch:
+
+1. Deploy or copy the patch to the CM instance.
+2. Restart the app pool or recycle the CM container.
+3. Set `POWERSHELL_SERVER_URL` to that CM host.
+4. Set `POWERSHELL_USERNAME` and `POWERSHELL_PASSWORD` to credentials that can log in to Sitecore.
+5. Reconnect your MCP client and call `discover-powershell-commands` or `run-powershell-script` to verify remoting works.
+
+This exception should be treated as a deliberate development-time allowance. Review the exact paths and your security requirements before carrying the same patch into higher environments.
+
 ### Transport behavior
 
 - `stdio`: no network port is opened. This is the right choice when the MCP client launches the server process for you.
