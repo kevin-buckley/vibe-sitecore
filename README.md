@@ -11,15 +11,16 @@ Minimal Sitecore MCP server exposing PowerShell-oriented tools plus a bundled mi
 
 ## Supported tools
 
-This trimmed server intentionally exposes seven tools:
+This trimmed server intentionally exposes six tools:
 
 - `skills-manager`: lists, retrieves, and searches bundled XP-to-XM Cloud migration skills with `list`, `get`, and `search` actions.
 - `config`: prints the current server configuration.
-- `get-page-html`: fetches rendered page HTML by absolute URL or by path relative to the configured page HTML base URL.
 - `discover-powershell-commands`: lists available Sitecore PowerShell (SPE) commands.
 - `get-powershell-help`: returns full help for a specific SPE command.
 - `logging-get-logs`: retrieves Sitecore logs from the log directory.
 - `run-powershell-script`: runs a PowerShell script and returns the output.
+
+For fetching rendered page HTML, use a browser-automation MCP (for example `chrome-devtools`) against the rendering host instead of bundling that capability here.
 
 The bundled migration skills currently include:
 
@@ -58,8 +59,7 @@ For most MCP clients, add a server entry like this:
         "POWERSHELL_DOMAIN": "sitecore",
         "POWERSHELL_USERNAME": "admin",
         "POWERSHELL_PASSWORD": "b",
-        "POWERSHELL_SERVER_URL": "https://xmcloudcm.localhost/",
-        "PAGE_HTML_BASE_URL": "http://localhost:3000"
+        "POWERSHELL_SERVER_URL": "https://xmcloudcm.localhost/"
       }
     }
   }
@@ -80,8 +80,7 @@ For local development from a checked-out repo, point the client at the built bun
         "POWERSHELL_DOMAIN": "sitecore",
         "POWERSHELL_USERNAME": "superuser",
         "POWERSHELL_PASSWORD": "b",
-        "POWERSHELL_SERVER_URL": "https://xmcloudcm.localhost/",
-        "PAGE_HTML_BASE_URL": "http://localhost:3000"
+        "POWERSHELL_SERVER_URL": "https://xmcloudcm.localhost/"
       }
     }
   }
@@ -96,10 +95,9 @@ The server reads the following environment variables:
 | --- | --- | --- | --- |
 | `TRANSPORT` | No | `stdio` | Startup transport. Supported values are `stdio`, `streamable-http`, and `sse`. `sse` is deprecated. |
 | `POWERSHELL_DOMAIN` | No | `sitecore` | Domain used for Sitecore PowerShell Remoting authentication. |
-| `POWERSHELL_USERNAME` | No | `admin` | Username used for Sitecore PowerShell Remoting authentication. Also used when `get-page-html` is called with `useConfiguredBasicAuth: true`. |
-| `POWERSHELL_PASSWORD` | No | `b` | Password used for Sitecore PowerShell Remoting authentication. Also used when `get-page-html` is called with `useConfiguredBasicAuth: true`. |
-| `POWERSHELL_SERVER_URL` | No | `https://xmcloudcm.localhost/` | Base URL for Sitecore PowerShell Remoting. If `PAGE_HTML_BASE_URL` is not set, `get-page-html` falls back to this value. |
-| `PAGE_HTML_BASE_URL` | No | `POWERSHELL_SERVER_URL` | Base URL used by `get-page-html` when the tool is called with a relative `path`. For XM Cloud this is usually the rendering host, for example `http://localhost:3000`. |
+| `POWERSHELL_USERNAME` | No | `admin` | Username used for Sitecore PowerShell Remoting authentication. |
+| `POWERSHELL_PASSWORD` | No | `b` | Password used for Sitecore PowerShell Remoting authentication. |
+| `POWERSHELL_SERVER_URL` | No | `https://xmcloudcm.localhost/` | Base URL for Sitecore PowerShell Remoting. |
 | `AUTORIZATION_HEADER` | No | empty string | Optional shared secret for HTTP transports. If set, the server requires the incoming `authorization` header to match this value. The variable name is intentionally spelled `AUTORIZATION_HEADER` to match the current implementation. |
 | `NODE_REJECT_UNAUTHORIZED` | No | Node.js default | Optional Node.js TLS setting. Set `NODE_REJECT_UNAUTHORIZED=0` only for local development when you need to call self-signed HTTPS endpoints such as local Sitecore CM instances. |
 
@@ -157,13 +155,10 @@ For `streamable-http` and `sse`, if `AUTORIZATION_HEADER` is set, clients must s
 This is the typical local XM Cloud setup:
 
 - `POWERSHELL_SERVER_URL=https://xmcloudcm.localhost/`
-- `PAGE_HTML_BASE_URL=http://localhost:3000`
-
-That combination lets PowerShell-oriented tools talk to CM while `get-page-html` fetches rendered HTML from the local rendering host.
 
 ### XP local example
 
-For a classic XP CM instance where rendered pages come from the same host, both values can point at CM:
+For a classic XP CM instance, point `POWERSHELL_SERVER_URL` at CM:
 
 ```json
 {
@@ -172,8 +167,7 @@ For a classic XP CM instance where rendered pages come from the same host, both 
     "POWERSHELL_DOMAIN": "sitecore",
     "POWERSHELL_USERNAME": "superuser",
     "POWERSHELL_PASSWORD": "b",
-    "POWERSHELL_SERVER_URL": "https://cm.lighthouse.localhost/",
-    "PAGE_HTML_BASE_URL": "https://cm.lighthouse.localhost/"
+    "POWERSHELL_SERVER_URL": "https://cm.lighthouse.localhost/"
   }
 }
 ```
