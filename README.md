@@ -54,6 +54,69 @@ Code & performance: `solution-code`, `frontend-performance`
 
 AI Agents may have limit on the amount of tools they can use. Please make sure that you have disabled the tools you don't need. It will make your agent faster, cheaper and more efficient.
 
+## Supported targets
+
+**Not for Live SaaS XM Cloud.** This server depends on Sitecore PowerShell (SPE) remoting at `/-/script/script/` with Basic authentication. Live SaaS XM Cloud does not expose that endpoint, does not allow the CM-side `RequireAuthentication` patch this MCP requires (see [Enable Sitecore PowerShell remoting on CM](#enable-sitecore-powershell-remoting-on-cm) below), and authenticates via Okta/OAuth rather than `sitecore\admin`-style Basic credentials.
+
+Use `vibe-sitecore` only against developer-facing instances where you control the CM filesystem and SPE config:
+
+- Local XM Cloud (`xmcloudcm.localhost` via the official XM Cloud Docker compose)
+- Local XM On-Prem / XP CM containers (e.g. `cm.lighthouse.localhost`)
+- Self-hosted XP or XM CM where you can deploy the SPE remoting include patch
+
+For Live SaaS XMC authoring work, use Sitecore CLI with the cloud-login flow (`dotnet sitecore cloud login`) and the authoring GraphQL endpoint instead — see [Recommended companions](#recommended-companions).
+
+## Recommended companions
+
+`vibe-sitecore` covers SPE-driven authoring (item creation/edit, template discovery, rendering inspection) and bundled know-how (migration playbooks + project review skills). Pair it with these two complementary tools for a full workflow:
+
+### Sitecore CLI (DevEx)
+
+Used for: serialization push/pull, publish, IAR resource generation, deployment, cloud login.
+
+The bundled `content-migration`, `template-migration`, and `component-migration` skills all assume Sitecore CLI is available — they reference `dotnet sitecore ser pull -i "<site>"` and `dotnet sitecore ser push -i "<site>-content"` as part of the standard workflow.
+
+Install per-project:
+
+```sh
+dotnet new tool-manifest
+dotnet tool install Sitecore.CLI
+dotnet sitecore plugin add -n Sitecore.DevEx.Extensibility.XMCloud
+```
+
+Authenticate:
+
+```sh
+# Local container CM
+dotnet sitecore login --cm https://xmcloudcm.localhost/ --auth https://xmcloudid.localhost/ --allow-write true
+
+# SaaS XM Cloud project (the one place this MCP cannot reach)
+dotnet sitecore cloud login
+```
+
+Sitecore CLI works against both local CM and Live SaaS, so it is the natural complement to `vibe-sitecore` for any authoring item kind that you want under source control (templates, renderings, page designs, content, media).
+
+### Chrome DevTools MCP
+
+Used for: fetching rendered page HTML, screenshots, console/network inspection, visual parity checks.
+
+The migration playbooks (especially `migration-playbook` and `component-migration`) emphasize **visual parity** as a non-negotiable check — styling drift between the XP source and the XMC rebuild does not surface in type checks or test suites. `vibe-sitecore` deliberately does not bundle browser automation; instead, pair with a browser MCP such as [`chrome-devtools` MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp).
+
+Typical workflow:
+
+1. Use `vibe-sitecore` (`sitecore-lighthouse-xp` instance) to inspect the XP source item, template, and rendering.
+2. Use `vibe-sitecore` (`sitecore-xmcloud-cm-local` instance) to author the XMC equivalents.
+3. Use Chrome DevTools MCP to render both the XP page and the XMC rendering host output, take screenshots, and confirm visual parity before marking the component done.
+
+### Suggested MCP client roster
+
+For an XP → XMC migration session, a minimal effective MCP setup is:
+
+- `vibe-sitecore` pointed at the **XP source** CM
+- `vibe-sitecore` pointed at the **XMC local** CM
+- `chrome-devtools` (or equivalent) for rendering checks
+- Sitecore CLI on the command line for serialization push/pull and deploys
+
 ## MCP configuration
 
 You can run `vibe-sitecore` either:
