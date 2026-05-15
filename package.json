@@ -2,7 +2,7 @@
   "name": "vibe-sitecore",
   "mcpName": "io.github.kevin-buckley/vibe-sitecore",
   "version": "1.3.5",
-  "description": "Minimal Vibe Sitecore MCP server exposing PowerShell tools plus a bundled migration skills manager.",
+  "description": "Minimal Vibe Sitecore MCP server exposing PowerShell tools plus a bundled skills manager covering XP-to-XM Cloud migration playbooks and XM Cloud project review checks.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kevin-buckley/vibe-sitecore.git"
@@ -22,7 +22,7 @@
   },
   "type": "module",
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "tsc && tsc-alias && node scripts/copy-bundled-skills.mjs",
     "bundle": "rollup -c",
     "prepare": "npm run build",
     "watch": "tsc --watch",

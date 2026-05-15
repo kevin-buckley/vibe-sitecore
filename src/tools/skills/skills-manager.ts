@@ -4,14 +4,42 @@ import { safeMcpResponse } from "@/helper.js";
 import { getSkill, listSkills, searchSkills } from "./catalog.js";
 import { z } from "zod";
 
+const CATEGORY_DISPLAY: Record<string, { order: number; label: string }> = {
+    "migration": { order: 0, label: "Migration playbooks" },
+    "project-review": { order: 1, label: "Project review / audits" },
+    "uncategorized": { order: 99, label: "Uncategorized" },
+};
+
 function formatListResponse(): string {
     const skills = listSkills();
+    const grouped = new Map<string, typeof skills>();
+    for (const skill of skills) {
+        const bucket = grouped.get(skill.category) ?? [];
+        bucket.push(skill);
+        grouped.set(skill.category, bucket);
+    }
+
+    const sortedCategories = Array.from(grouped.keys()).sort((a, b) => {
+        const aOrder = CATEGORY_DISPLAY[a]?.order ?? 50;
+        const bOrder = CATEGORY_DISPLAY[b]?.order ?? 50;
+        return aOrder - bOrder;
+    });
+
+    const sections: string[] = [];
+    for (const category of sortedCategories) {
+        const bucket = grouped.get(category)!;
+        const label = CATEGORY_DISPLAY[category]?.label ?? category;
+        sections.push(`${label} (${bucket.length}):`, "");
+        for (const skill of bucket) {
+            sections.push(`- ${skill.id}: ${skill.description}`);
+        }
+        sections.push("");
+    }
 
     return [
-        `Bundled migration skills (${skills.length})`,
+        `Bundled skills (${skills.length})`,
         "",
-        ...skills.map((skill) => `${skill.id}: ${skill.description}`),
-        "",
+        ...sections,
         "Use action=get with the skill id to retrieve the full skill content.",
     ].join("\n");
 }
@@ -25,6 +53,7 @@ function formatGetResponse(skillId: string): string {
     return [
         `Skill: ${skill.id}`,
         `Name: ${skill.name}`,
+        `Category: ${skill.category}`,
         `Source: ${skill.source}`,
         `Tags: ${skill.tags.join(", ")}`,
         `Triggers: ${skill.triggers.join(", ")}`,
@@ -61,7 +90,7 @@ function formatSearchResponse(query: string, limit: number): string {
 export function skillsManagerTool(server: McpServer, _config: Config) {
     server.tool(
         "skills-manager",
-        "Lists, retrieves, and searches bundled XP-to-XM Cloud migration skills. Use action=list to see available skills, action=get to retrieve a specific skill, or action=search to find the most relevant skills for a migration task.",
+        "Lists, retrieves, and searches bundled Sitecore skills covering XP-to-XM Cloud migration playbooks and XM Cloud project review/audit checks (data templates, content, presentation, SXA, headless, security, workflow, performance, code quality). Use action=list to see available skills, action=get to retrieve a specific skill, or action=search to find the most relevant skills for a task.",
         {
             action: z.enum(["list", "get", "search"]).describe("The skills-manager action to perform: list, get, or search."),
             skill: z.string().optional().describe("The skill id or friendly skill name to retrieve when action=get, for example 'migration-playbook' or 'component-migration'."),
