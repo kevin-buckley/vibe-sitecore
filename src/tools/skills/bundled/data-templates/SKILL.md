@@ -34,6 +34,14 @@ Use this skill to audit data template design in a Sitecore XM Cloud SXA Headless
 **Issue indicators:** Fields duplicated across templates instead of inherited, templates not using SXA's standard base templates where applicable.
 **Recommendation:** Extract shared fields into base templates. Ensure page templates inherit from the Headless Site's Page template or an appropriate SXA base.
 
+### Page templates inherit from SXA Page + _Designable
+**Severity:** Major
+**What to verify:** Every routable page template's inheritance chain includes BOTH:
+- SXA `Page` `{3F8A6A5D-7B1A-4566-8CD4-0A50F3030BD8}` — the marker base that SXA-aware tooling checks for via `DoesTemplateInheritFrom(Page.ID)`
+- SXA `_Designable` `{6650FB34-7EA1-4245-A919-5CC0F002A6D7}` — adds the `Page Design` field that participates in TemplatesMapping
+**Issue indicators:** Bespoke project page templates (e.g. those from Sitecore.Demo.Platform-style starters) inheriting only `_Designable + Standard Template`, skipping SXA Page. Symptom: pages render fine but external tools (Sitecore AI Pathway's "Download Export Structure", site-audit scripts, etc.) emit no pages for the site because their strict SXA Page inheritance check fails.
+**Recommendation:** Add SXA Page to the project's root page template's `__Base template` field. SXA Page defines zero fields itself, so adding it as a base introduces no field collisions on any descendant. The change cascades to every page template that inherits from the root via normal Sitecore template inheritance; no per-template edits required.
+
 ### Cyclical template inheritance
 **Severity:** Major
 **What to verify:** No template inherits from itself directly or through a chain of base templates.

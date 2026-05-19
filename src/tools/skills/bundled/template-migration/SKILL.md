@@ -17,6 +17,7 @@ Use this skill when the task is about rebuilding the XP content model in XM Clou
 2. Do not preserve field clutter just because it exists in XP.
 3. Design templates around the new authoring model and the needs of the Content SDK rendering layer.
 4. Create new templates, sections, fields, standard values, and insert options in XM Cloud via MCP tooling (authoring GraphQL or SPE remoting via `run-powershell-script`) or the authoring UI, not by hand-authored YAML. Use `dotnet sitecore ser pull` only to export already-created items to source control. Hand-authoring template YAML is a fast way to produce items that load with broken field types, missing source values, or wrong base templates.
+5. **Page templates must inherit from both `SXA Page` `{3F8A6A5D-7B1A-4566-8CD4-0A50F3030BD8}` and `_Designable` `{6650FB34-7EA1-4245-A919-5CC0F002A6D7}`.** SXA Page is the marker that SXA-aware tooling looks for (the upstream "Download Export Structure" script and any other `DoesTemplateInheritFrom(Page.ID)` check); `_Designable` adds the `Page Design` field that participates in TemplatesMapping. Add both bases on the project's root page template — SXA Page defines zero fields, so it cascades to every descendant page template with no field collisions. Sites scaffolded outside the SXA Headless Site Branch Template (e.g. Sitecore.Demo.Platform-style starters) typically inherit only from `_Designable`; that renders fine but breaks every external tool that walks site structure.
 
 ## Primary Goal
 

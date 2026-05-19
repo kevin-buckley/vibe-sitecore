@@ -18,6 +18,15 @@ Use this skill when binding templates to Page Designs, composing Partial Designs
 - A **template** is bound to a Page Design via the Page Designs folder's `TemplatesMapping` field (see encoding below). Every page derived from that template inherits the design.
 - A **Sub Page template** plus a single SubPage Page Design is the standard pattern for a family of pages that share chrome but diverge in body content.
 
+## Prerequisite: page template inheritance
+
+The whole Page Design + Partial Design + TemplatesMapping system only resolves if the page template inherits from the right SXA bases. Required:
+
+- **SXA Page** `{3F8A6A5D-7B1A-4566-8CD4-0A50F3030BD8}` — the marker base SXA-aware tooling checks (`DoesTemplateInheritFrom(Page.ID)`). External pipelines like the Sitecore AI Pathway "Download Export Structure" script enumerate site pages by this check.
+- **_Designable** `{6650FB34-7EA1-4245-A919-5CC0F002A6D7}` — adds the `Page Design` field on every page item; without it, TemplatesMapping has nothing to bind to per-item.
+
+SXA Headless Site Branch Template-scaffolded sites satisfy this automatically. Bespoke or migrated sites (e.g. Sitecore.Demo.Platform's `Pages/Page` template that inherits only from `_Designable + Standard Template`) need SXA Page added as a base on the project root page template. SXA Page itself defines zero fields, so adding it as an additional base cascades to all descendants with no field collisions. See template-migration / data-templates skill for the audit rule.
+
 ## Gotcha: Renderings on a Page Design's own Final Renderings do NOT render
 
 If you place a rendering directly on the Page Design item's `__Final Renderings`, it will not appear on pages that use the design. The Page Design is a composition item — its own Final Renderings are ignored at merge time.

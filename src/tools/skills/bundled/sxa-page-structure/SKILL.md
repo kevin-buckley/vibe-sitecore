@@ -28,6 +28,15 @@ Use this skill to audit SXA page structure patterns in a Sitecore XM Cloud SXA H
 **Issue indicators:** Editors see dozens of renderings including internal/system components, raw base components alongside their styled variants.
 **Recommendation:** Curate Available Renderings to show only editor-appropriate components. Hide internal, deprecated, or base components that have styled replacements.
 
+### Page templates inherit from both SXA Page and _Designable
+**Severity:** Major
+**What to verify:** Every page template (anything an editor creates as a routable page item) inherits from the SXA `Page` template `{3F8A6A5D-7B1A-4566-8CD4-0A50F3030BD8}` AND the SXA `_Designable` template `{6650FB34-7EA1-4245-A919-5CC0F002A6D7}`. Both bases are required: SXA Page is the marker that SXA-aware tooling checks for; _Designable adds the `Page Design` field that participates in TemplatesMapping.
+**Issue indicators:**
+- Bespoke project page templates inheriting only from Standard Template + a custom base, skipping SXA Page entirely. Symptom: the page renders fine, but the upstream Sitecore AI Pathway "Download Export Structure" script and any other tool that does `DoesTemplateInheritFrom(SXA Page)` emits zero pages for the site.
+- Page templates inheriting from SXA Page but missing _Designable. Symptom: no `Page Design` field on the page item, TemplatesMapping inheritance doesn't apply, editors can't pick a page design.
+- Sites scaffolded outside the SXA Headless Site Branch Template (e.g. Sitecore.Demo.Platform's older Pages/Page) commonly hit the first case.
+**Recommendation:** Add SXA Page as an additional base on the site's root project page template; the inheritance cascades to every descendant page template. SXA Page itself defines zero fields, so adding it as a base introduces no field collisions. Standard SXA Headless Site Branch Template-scaffolded sites already satisfy this; bespoke or migrated sites typically don't and need a one-line `__Base template` field edit (with cascading effect on all descendants).
+
 ### Setup placeholder restrictions
 **Severity:** Major
 **What to verify:** Every placeholder has Placeholder Settings that restrict which renderings can be placed there. This prevents editors from creating broken layouts.
