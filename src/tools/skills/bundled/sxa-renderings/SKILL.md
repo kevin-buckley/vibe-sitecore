@@ -16,6 +16,17 @@ Use this skill to audit rendering usage, rendering variants, and development pra
 **Issue indicators:** Controller renderings or View renderings in a headless site, custom renderings built where an OOTB SXA headless rendering would work.
 **Recommendation:** Prefer OOTB SXA headless renderings where they meet requirements. Only create custom JSON renderings when OOTB options are insufficient.
 
+### Available Renderings, Placeholder Settings, and the rendering host's component-map must agree
+**Severity:** Major
+**What to verify:** Every rendering ID in a site's `Presentation/Available Renderings` folders AND in its `Presentation/Placeholder Settings/.../Allowed Controls` resolves to a Json Rendering with a non-empty `componentName`, AND that `componentName` is registered in the rendering host's `.sitecore/component-map.ts`. The three layers are a contract — break any one and editors get an allowlist that promises components the rendering host can't render.
+**Issue indicators:**
+- Pages render the orange "Content SDK component is missing React implementation" panel.
+- A rendering's `template` is `Controller rendering` (XP MVC) instead of `Json Rendering`.
+- A rendering's `componentName` field is empty (controller renderings never have it; misconfigured Json renderings sometimes don't either).
+- A rendering item lives under `/Renderings/Project/<OtherSite>/` but is referenced from this site — the React component lives in the *other* site's rendering host, not this one.
+- The SXA Headless Site Branch Template scaffolded the default 13 Available Renderings (RichText, Image, Title, PageContent, Promo, Navigation, LinkList, Container, ColumnSplitter, RowSplitter, Form, BYOC Wrapper, FEaaS Wrapper) but the rendering host is bespoke (not started from the Sitecore Next.js starter) and only registers a project-specific subset, so most defaults fall through to the missing-implementation panel.
+**Recommendation:** For each Available Renderings folder, list its rendering IDs, look up each item's `componentName`, and confirm the name appears as a key in the rendering host's `component-map.ts`. Either port the missing React components (the Sitecore-published Next.js starters carry implementations for the default 13) or prune the allowlist down to what the host actually renders. Custom project renderings must also be explicitly added to an Available Renderings folder (and to relevant Placeholder Settings `Allowed Controls`) — being present at `/Renderings/Project/<Site>/` does not auto-authorize them.
+
 ### Use Snippet rendering to prepare sets of components
 **Severity:** Minor
 **What to verify:** Pre-configured sets of components (e.g., a two-column layout with specific default datasources) use the Snippet rendering pattern for editor convenience.
