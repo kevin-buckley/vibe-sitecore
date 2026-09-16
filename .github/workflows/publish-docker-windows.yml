@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - uses: mr-smithers-excellent/docker-build-push@v6
         name: Build & push Docker image
         with:
