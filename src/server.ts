@@ -7,7 +7,7 @@ import { registerAll } from "./register.js";
 export async function getServer(config: Config): Promise<McpServer> {
     const server = new McpServer({
         name: `Vibe Sitecore MCP Server: ${config.name}`,
-        description: "Minimal Vibe Sitecore MCP server exposing PowerShell tools plus a bundled migration skills manager.",
+        description: "Minimal Vibe Sitecore MCP server exposing PowerShell discovery and execution tools.",
         version: config.version || "0.0.1",
     });
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "io.github.kevin-buckley/vibe-sitecore",
-  "description": "Minimal Vibe Sitecore MCP server exposing PowerShell tools plus a bundled migration skills manager.",
+  "description": "Minimal Vibe Sitecore MCP server exposing PowerShell discovery and execution tools.",
   "status": "active",
   "repository": {
     "url": "https://github.com/kevin-buckley/vibe-sitecore",

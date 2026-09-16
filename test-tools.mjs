@@ -49,41 +49,13 @@ async function main() {
     const toolNames = tools.map(t => t.name);
     console.log("  Found:", toolNames.join(", "), "\n");
 
-    const EXPECTED = ["config", "skills-manager", "discover-powershell-commands", "get-powershell-help", "logging-get-logs", "run-powershell-script"];
+    const EXPECTED = ["config", "discover-powershell-commands", "get-powershell-help", "logging-get-logs", "run-powershell-script"];
     for (const name of EXPECTED) {
         result(`tool registered: ${name}`, toolNames.includes(name), "not found in list");
     }
     console.log();
 
-    // ── 2. skills-manager ─────────────────────────────────────────────────────
-    console.log("Testing: skills-manager");
-    try {
-        const listResponse = await client.callTool({ name: "skills-manager", arguments: { action: "list" } });
-        const listText = listResponse.content?.[0]?.text ?? "";
-        result("skills-manager list returns content", listText.length > 0, "empty response");
-        result("skills-manager list includes migration-playbook", listText.includes("migration-playbook"), listText.slice(0, 120));
-
-        const getResponse = await client.callTool({
-            name: "skills-manager",
-            arguments: { action: "get", skill: "component-migration" },
-        });
-        const getText = getResponse.content?.[0]?.text ?? "";
-        result("skills-manager get returns content", getText.length > 0, "empty response");
-        result("skills-manager get includes component content", getText.toLowerCase().includes("content sdk"), getText.slice(0, 120));
-
-        const searchResponse = await client.callTool({
-            name: "skills-manager",
-            arguments: { action: "search", query: "rendering variant migration", limit: 3 },
-        });
-        const searchText = searchResponse.content?.[0]?.text ?? "";
-        result("skills-manager search returns content", searchText.length > 0, "empty response");
-        result("skills-manager search finds component migration", searchText.includes("component-migration"), searchText.slice(0, 120));
-    } catch (e) {
-        result("skills-manager", false, e.message);
-    }
-    console.log();
-
-    // ── 3. config ─────────────────────────────────────────────────────────────
+    // ── 2. config ─────────────────────────────────────────────────────────────
     console.log("Testing: config");
     try {
         const r = await client.callTool({ name: "config", arguments: {} });
@@ -96,7 +68,7 @@ async function main() {
     }
     console.log();
 
-    // ── 4. discover-powershell-commands ───────────────────────────────────────
+    // ── 3. discover-powershell-commands ───────────────────────────────────────
     console.log("Testing: discover-powershell-commands");
     try {
         const r = await client.callTool({ name: "discover-powershell-commands", arguments: { filter: "Item" } });
@@ -108,7 +80,7 @@ async function main() {
     }
     console.log();
 
-    // ── 5. get-powershell-help ────────────────────────────────────────────────
+    // ── 4. get-powershell-help ────────────────────────────────────────────────
     console.log("Testing: get-powershell-help");
     try {
         const r = await client.callTool({ name: "get-powershell-help", arguments: { command: "Get-Item" } });
@@ -120,7 +92,7 @@ async function main() {
     }
     console.log();
 
-    // ── 6. logging-get-logs ───────────────────────────────────────────────────
+    // ── 5. logging-get-logs ───────────────────────────────────────────────────
     console.log("Testing: logging-get-logs");
     try {
         const r = await client.callTool({ name: "logging-get-logs", arguments: { name: "log", tail: 10 } });
@@ -131,7 +103,7 @@ async function main() {
     }
     console.log();
 
-    // ── 7. run-powershell-script ──────────────────────────────────────────────
+    // ── 6. run-powershell-script ──────────────────────────────────────────────
     console.log("Testing: run-powershell-script");
     try {
         const r = await client.callTool({ name: "run-powershell-script", arguments: { script: 'Get-Item -Path "master:/sitecore/content" | Select-Object Name | ConvertTo-Json' } });
