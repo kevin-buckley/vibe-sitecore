@@ -7,13 +7,12 @@ Source repository: https://github.com/kevin-buckley/vibe-sitecore
 
 Acknowledgement: Thanks to [Antonytm](https://github.com/Antonytm) for the original work on [mcp-sitecore-server](https://github.com/Antonytm/mcp-sitecore-server), which this project builds on.
 
-Minimal Sitecore MCP server exposing PowerShell-oriented tools plus a bundled skills manager covering XP-to-XM Cloud migration playbooks and XM Cloud project review / audit checks.
+Minimal Sitecore MCP server exposing PowerShell discovery and execution tools.
 
 ## Supported tools
 
-This trimmed server intentionally exposes six tools:
+This trimmed server intentionally exposes five tools:
 
-- `skills-manager`: lists, retrieves, and searches bundled Sitecore skills (migration playbooks + project review audits) with `list`, `get`, and `search` actions.
 - `config`: prints the current server configuration.
 - `discover-powershell-commands`: lists available Sitecore PowerShell (SPE) commands.
 - `get-powershell-help`: returns full help for a specific SPE command.
@@ -21,38 +20,6 @@ This trimmed server intentionally exposes six tools:
 - `run-powershell-script`: runs a PowerShell script and returns the output.
 
 For fetching rendered page HTML, use a browser-automation MCP (for example `chrome-devtools`) against the rendering host instead of bundling that capability here.
-
-## Bundled skills
-
-Each skill is a `SKILL.md` file under [`src/tools/skills/bundled/<id>/`](src/tools/skills/bundled). At server start the catalog scans that folder, parses the YAML frontmatter (name, description, category, tags, triggers), and caches the index in memory; bodies are read from disk on first access. Add a new skill by dropping in a new folder + `SKILL.md` and rebuilding.
-
-`action=list` returns the catalog grouped by `category`. The bundled set currently ships:
-
-### Migration playbooks (7)
-
-- `migration-playbook` — coordinate an end-to-end XP→XM Cloud migration that spans site, templates, components, content, and code.
-- `site-migration` — site definition, IA, navigation, route architecture.
-- `template-migration` — content model, base templates, field mapping, standard values.
-- `component-migration` — XP renderings → Content SDK components.
-- `content-migration` — pages, datasources, media, taxonomy; covers the `authoring/` vs `content-push/` two-root deploy split.
-- `code-migration` — MVC/pipeline/integration code → Content SDK rendering host.
-- `page-design-setup` — Page Designs, Partial Designs, `TemplatesMapping` encoding, headless placeholder wiring.
-
-### Project review / audits (19)
-
-Data model & content: `data-templates`, `content-items`, `media`
-
-Presentation & SXA: `presentation-layer`, `sxa-page-structure`, `sxa-renderings`, `sxa-theming`, `sxa-datasources-media`, `sxa-multisite`, `sxa-performance`
-
-Headless / Content SDK: `headless-configuration`, `headless-graphql`, `headless-performance`, `headless-project-structure`, `headless-editor-experience`
-
-Governance: `security`, `workflow`
-
-Code & performance: `solution-code`, `frontend-performance`
-
-### Tools selection
-
-AI Agents may have limit on the amount of tools they can use. Please make sure that you have disabled the tools you don't need. It will make your agent faster, cheaper and more efficient.
 
 ## Supported targets
 
@@ -68,13 +35,11 @@ For Live SaaS XMC authoring work, use Sitecore CLI with the cloud-login flow (`d
 
 ## Recommended companions
 
-`vibe-sitecore` covers SPE-driven authoring (item creation/edit, template discovery, rendering inspection) and bundled know-how (migration playbooks + project review skills). Pair it with these two complementary tools for a full workflow:
+`vibe-sitecore` covers SPE-driven authoring (item creation/edit, template discovery, rendering inspection). Pair it with these two complementary tools for a full workflow:
 
 ### Sitecore CLI (DevEx)
 
 Used for: serialization push/pull, publish, IAR resource generation, deployment, cloud login.
-
-The bundled `content-migration`, `template-migration`, and `component-migration` skills all assume Sitecore CLI is available — they reference `dotnet sitecore ser pull -i "<site>"` and `dotnet sitecore ser push -i "<site>-content"` as part of the standard workflow.
 
 Install per-project:
 
