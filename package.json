@@ -1,7 +1,7 @@
 {
   "name": "vibe-sitecore",
   "mcpName": "io.github.kevin-buckley/vibe-sitecore",
-  "version": "1.3.5",
+  "version": "2.0.0",
   "description": "Minimal Vibe Sitecore MCP server exposing PowerShell discovery and execution tools.",
   "repository": {
     "type": "git",
@@ -33,13 +33,13 @@
     "start:stdio": "npm run build && cross-env TRANSPORT=stdio node dist/index.js",
     "run": "npm run build && node dist/run.js",
     "test": "npm run build && npm run bundle && vitest run --passWithNoTests",
-    "docker:windows:build": "docker build -t vibe-sitecore-windows:1.3.5 -t vibe-sitecore-windows:latest --file .\\docker\\windows\\Dockerfile .",
+    "docker:windows:build": "docker build -t vibe-sitecore-windows:2.0.0 -t vibe-sitecore-windows:latest --file .\\docker\\windows\\Dockerfile .",
     "docker:windows:run": "docker run -it --rm -p 4001:3001 vibe-sitecore-windows:latest",
-    "docker:windows:push": "docker push vibe-sitecore-windows:1.3.5 && docker push vibe-sitecore-windows:latest",
+    "docker:windows:push": "docker push vibe-sitecore-windows:2.0.0 && docker push vibe-sitecore-windows:latest",
     "docker:windows": "npm run docker:windows:build && npm run docker:windows:push",
-    "docker:linux:build": "docker build -t vibe-sitecore-linux:1.3.5 -t vibe-sitecore-linux:latest --file ./docker/linux/Dockerfile .",
+    "docker:linux:build": "docker build -t vibe-sitecore-linux:2.0.0 -t vibe-sitecore-linux:latest --file ./docker/linux/Dockerfile .",
     "docker:linux:run": "docker run -it --rm -p 4001:3001 vibe-sitecore-linux:latest",
-    "docker:linux:push": "docker push vibe-sitecore-linux:1.3.5 && docker push vibe-sitecore-linux:latest",
+    "docker:linux:push": "docker push vibe-sitecore-linux:2.0.0 && docker push vibe-sitecore-linux:latest",
     "docker:linux": "npm run docker:linux:build && npm run docker:linux:push"
   },
   "dependencies": {
